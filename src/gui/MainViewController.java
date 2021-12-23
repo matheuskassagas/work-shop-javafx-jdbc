@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 import application.Main;
 import javafx.fxml.FXML;
@@ -14,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import service.DepartmentService;
 import util.Alerts;
 
 public class MainViewController implements Initializable {
@@ -31,17 +33,24 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	public void onMenuItemSellerAction() {
-		System.out.println("onMenuItemSellerAction");
+//		loadView("/gui/SellerList.fxml", (SellerListController controller) -> {
+//			controller.setSellerService(new SellerService());
+//			controller.updateTableView();
+//		});
+//	}
 	}
 	
 	@FXML
 	public void onMenuItemDepartmentAction() {
-		loadView("/gui/DepartmentList.fxml");
+		loadView("/gui/DepartmentList.fxml", (DepartmentListController controller) -> {
+			controller.setDepartmentService(new DepartmentService());
+			controller.updateTableView();
+		});
 	}
 	
 	@FXML
 	public void onMenuItemAboutAction() {
-		loadView("/gui/About.fxml");
+		loadView("/gui/About.fxml", x -> {});
 	}
 
 	@Override
@@ -51,7 +60,7 @@ public class MainViewController implements Initializable {
 //	
 //	Esse metodo acessa o ScrollPane a nossa primeira tag do fxml, buscamos a VBox principal, acessamos a tag children. Limpamos a tag children e adionamos
 //	o conteudo da tag children antigo e o novo. Dando acesso a outra tela
-	private synchronized void loadView(String absoluteName) {
+	private synchronized <T> void loadView(String absoluteName, Consumer<T> initializingAction) {
 		try{
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			VBox newVBox = loader.load();
@@ -63,6 +72,9 @@ public class MainViewController implements Initializable {
 			mainVBox.getChildren().clear();
 			mainVBox.getChildren().add(mainMenu);
 			mainVBox.getChildren().addAll(newVBox);
+			
+			T controller = loader.getController();
+			initializingAction.accept(controller);
 			
 		}
 		catch (IOException e) {
