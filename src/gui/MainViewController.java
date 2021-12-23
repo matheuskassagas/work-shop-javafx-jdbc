@@ -18,6 +18,8 @@ import util.Alerts;
 
 public class MainViewController implements Initializable {
 	
+	
+	
 	@FXML
 	private MenuItem menuItemSeller;
 	
@@ -46,6 +48,9 @@ public class MainViewController implements Initializable {
 	public void initialize(URL uri, ResourceBundle rb) {		
 	}
 	
+//	
+//	Esse metodo acessa o ScrollPane a nossa primeira tag do fxml, buscamos a VBox principal, acessamos a tag children. Limpamos a tag children e adionamos
+//	o conteudo da tag children antigo e o novo. Dando acesso a outra tela
 	private synchronized void loadView(String absoluteName) {
 		try{
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
