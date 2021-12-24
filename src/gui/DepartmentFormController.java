@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DbException;
+import gui.listeners.DataChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,6 +25,8 @@ public class DepartmentFormController implements Initializable{
 	private Department entity;
 	
 	private DepartmentService service;
+	
+	private List<DataChangeListener> dataChangeListener = new ArrayList<>();
 	
 	@FXML
 	private TextField txtId;
@@ -46,6 +51,10 @@ public class DepartmentFormController implements Initializable{
 		this.service = service;
 	}
 	
+	public void subscribleDataChangeListener(DataChangeListener listener) {
+		dataChangeListener.add(listener);
+	}
+	
 	@FXML
 	public void onBtSaveAction(ActionEvent event) {
 		if (entity == null) {
@@ -56,16 +65,24 @@ public class DepartmentFormController implements Initializable{
 		}
 		try {
 			entity = getFormData();
-		service.SaveOrUpdate(entity);
+			service.SaveOrUpdate(entity);
+			notifyDataChangeListeners();
+			//operacao para fechar a janela
+			Utils.currentStage(event).close();
 		}
 		catch (DbException e) {
 			Alerts.showAlert("Error saving objetc", null, e.getMessage(), AlertType.ERROR);
-			//operacao para fechar a janela
-			Utils.currentStage(event).close();
+			
 		}
 		
 	}
 	
+	private void notifyDataChangeListeners() {
+		for (DataChangeListener listener : dataChangeListener) {
+			listener.onDataChanged();
+		}
+	}
+
 	//metodo responsavel por pegar os dados em txt do form e instanciar como objeto department
 	private Department getFormData() {
 		Department obj = new Department();
@@ -97,4 +114,5 @@ public class DepartmentFormController implements Initializable{
 		txtId.setText(String.valueOf(entity.getId()));
 		txtName.setText(entity.getName());
 	}
+
 }
