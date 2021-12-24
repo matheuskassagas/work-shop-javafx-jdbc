@@ -84,6 +84,8 @@ public class DepartmentListController implements Initializable {
 		tableViewDepartment.setItems(obsList);
 	}
 	
+	
+	//responsavel por gerar a tela de adicionar e atualizar um departamento
 	private void createDialogForm(Department obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
@@ -91,6 +93,7 @@ public class DepartmentListController implements Initializable {
 			
 			DepartmentFormController controller = loader.getController();
 			controller.setDepartment(obj);
+			controller.setDepartmentService(new DepartmentService());;
 			controller.updateFormData();
 			
 			Stage dialogStage = new Stage();
